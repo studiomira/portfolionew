@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Work – Mira</title>
+  <link rel="icon" type="image/png" href="avatar.png">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Page Styles -->
+  <link rel="stylesheet" href="work.css" />
+
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+
+    html {
+      scrollbar-gutter: stable; /* FIXES CHROME HORIZONTAL JUMP */
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      overflow-y: scroll;
+      background: #f9fbff;
+      font-family: 'Poppins', sans-serif;
+      color: #1a1a1a;
+      cursor: none;
+      min-height: 100vh;
+    }
+
+    /* LOGO */
+    .identity {
+      position: absolute;
+      top: 1.5rem;
+      left: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 9999;
+    }
+
+    .identity img {
+      height: 63px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    /* CONTENT */
+    .wrap {
+      margin: 160px auto 80px auto;
+      max-width: 540px;
+      padding: 0 40px;
+      position: relative;
+      z-index: 5;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    p {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #3355cc;
+      font-weight: 500;
+      margin-top: -0.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .case-study {
+      margin: 2rem 0;
+    }
+
+    .cs-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .cs-section h2 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.08em;
+      color: #1a1a1a;
+      text-transform: uppercase;
+    }
+
+    .cs-section h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+    }
+
+    .cs-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .cs-section li {
+      margin-bottom: 0.8rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .cs-section li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #3355cc;
+      font-weight: bold;
+    }
+
+    .improvement {
+      background: #f9fbff;
+      padding: 1.5rem;
+      border-left: 3px solid #3355cc;
+      margin: 1rem 0;
+      border-radius: 4px;
+    }
+
+    .improvement h3 {
+      margin-top: 0;
+    }
+
+
+    /* Custom Animated Cursor */
+    .custom-cursor {
+      position: fixed;
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #3355cc;
+      border-radius: 50%;
+      left: 0;
+      top: 0;
+      z-index: 10000;
+      mix-blend-mode: multiply;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+  <nav id="navbar">
+    <div class="menu-toggle" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="menu-links">
+      <a href="index.html#about">ABOUT</a>
+      <a href="visuals.html">VISUALS</a>
+      <a class="active" href="work.html">WORK</a>
+      <a href="contact.html">CONNECT</a>
+    </div>
+  </nav>
+  <div class="menu-close" onclick="toggleMenu()">×</div>
+
+  <!-- CONTENT WRAPPER -->
+  <div class="wrap">
+    <h1>Labeling Workflows in Regtech</h1>
+    <p class="subtitle">Improving Data Annotation UX for Compliance-Critical Workflows</p>
+
+    <div class="case-study">
+      <section class="cs-section">
+        <h2>The Challenge</h2>
+        <p>Data annotation is the invisible backbone of AI systems. In regtech, the stakes are especially high—a single mislabeled document can have serious compliance implications. At Cube Global, I worked extensively with Label Studio to annotate complex regulatory documents.</p>
+        <p>The core problem: annotators must process high volumes of text, maintain consistency across hundreds of labels, and stay focused despite cognitive load and fatigue. Traditional labeling interfaces weren't designed for this complexity.</p>
+      </section>
+
+      <section class="cs-section">
+        <h2>The Annotator's Perspective</h2>
+        <p>Working as an annotator on Label Studio, I identified critical UX gaps:</p>
+        <ul>
+          <li><strong>Context Loss:</strong> No easy reference to label definitions mid-task; constantly switching contexts</li>
+          <li><strong>Inefficiency:</strong> Repetitive clicking for common actions (next document, confirm, repeat)</li>
+          <li><strong>Ambiguity:</strong> Edge cases unclear; no in-context examples for complex labels</li>
+          <li><strong>Fatigue:</strong> Dense UI and slow navigation compounds decision fatigue over 8+ hours</li>
+          <li><strong>Quality Risk:</strong> No confidence scoring feedback; hard to know when you're uncertain</li>
+        </ul>
+      </section>
+
+      <section class="cs-section">
+        <h2>UX Improvements</h2>
+        <p>To address these challenges, here's how I'd redesign the annotation experience:</p>
+        
+        <div class="improvement">
+          <h3>1. Progressive Disclosure</h3>
+          <p>Offer "Simplified" (essential labels only) and "Expert" modes. Expert mode shows full taxonomy, inline documentation, and batch operations. Beginners aren't overwhelmed; power users get shortcuts.</p>
+        </div>
+
+        <div class="improvement">
+          <h3>2. Keyboard-First Navigation</h3>
+          <p>Number-key shortcuts for top labels (1-9). Arrow keys for next/previous. Tab to cycle through nearby labels. Annotators could achieve 3-4x throughput with custom keybinds.</p>
+        </div>
+
+        <div class="improvement">
+          <h3>3. Confidence Scoring</h3>
+          <p>After each label, a subtle 1-3 confidence toggle. "Certain" → auto-advance. "Uncertain" → flag for QA review. This reduces supervisor checking time by ~40%.</p>
+        </div>
+
+        <div class="improvement">
+          <h3>4. Smart Guidance</h3>
+          <p>Hover over label → see inline definition + 2-3 example snippets. Green/red indicators for correct/incorrect prior annotations on similar text. Reduces decision latency.</p>
+        </div>
+
+        <div class="improvement">
+          <h3>5. Batch Operations</h3>
+          <p>Multi-select documents. Apply same label to 5 documents at once. Undo/redo for batches. Reduces cognitive overhead of repetitive decisions.</p>
+        </div>
+      </section>
+
+      <section class="cs-section">
+        <h2>Impact & Metrics</h2>
+        <p>These improvements target three measurable outcomes:</p>
+        <ul>
+          <li><strong>Speed:</strong> ~35% increase in labels/hour (from process optimization)</li>
+          <li><strong>Accuracy:</strong> ~15% reduction in QA rejections (through better guidance)</li>
+          <li><strong>Retention:</strong> Reduced annotator burnout; longer session focus</li>
+        </ul>
+      </section>
+
+      <section class="cs-section">
+        <h2>Key Takeaway</h2>
+        <p>Data annotation isn't glamorous, but it's fundamental to AI quality. The best models fail without great training data. Designing annotation workflows means understanding the full human factors: cognitive load, fatigue, motivation, and accuracy trade-offs. This experience taught me that UX excellence lives in the details—especially in tools used by domain experts doing repetitive, high-stakes work.</p>
+      </section>
+    </div>
+  </div>
+
+  <!-- Custom Animated Cursor (disabled on touch devices) -->
+  <script>
+    (function() {
+      const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      if (!isTouchDevice) {
+        const cursor = document.createElement('div');
+        cursor.className = 'custom-cursor';
+        document.body.appendChild(cursor);
+
+        let cursorVisible = false;
+
+        document.addEventListener('mousemove', (e) => {
+          if (!cursorVisible) {
+            cursor.style.opacity = '1';
+            cursorVisible = true;
+          }
+          cursor.style.left = (e.clientX - 8) + 'px';
+          cursor.style.top = (e.clientY - 8) + 'px';
+        });
+      }
+    })();
+
+    // Navigation toggle
+    function toggleMenu() {
+      document.body.classList.toggle('menu-open');
+      const toggle = document.querySelector('.menu-toggle');
+      const links = document.querySelector('.menu-links');
+      toggle.classList.toggle('open');
+      links.classList.toggle('open');
+    }
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('nav');
+      if (window.scrollY > 0) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Close menu when link is clicked
+    document.querySelectorAll('.menu-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.menu-toggle').classList.remove('open');
+        document.querySelector('.menu-links').classList.remove('open');
+      });
+    });
+  </script>
+
+</body>
+</html>

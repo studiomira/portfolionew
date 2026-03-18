@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Concentric Circles + Sphere (Top 47% – Sphere Hidden)</title>
+  <style>
+    html { background: transparent; }
+    body { margin: 0; background: transparent; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    const baseRings = [40, 80, 120, 160, 200];
+    let angle = 0;
+
+    function draw() {
+      // Invisible base so strokes stay visible over transparency
+      ctx.fillStyle = "rgba(255,255,255,0.0001)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // ----- MASK: top 47% -----
+      ctx.save();
+      const visibleCut = canvas.height * 0.47;
+      ctx.beginPath();
+      ctx.rect(0, 0, canvas.width, visibleCut);
+      ctx.clip();
+      // --------------------------
+
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+
+      const sphereR = 12;
+      const travelRadius = baseRings[0] - sphereR - 4;
+      const sx = cx + Math.cos(angle) * travelRadius;
+      const sy = cy + Math.sin(angle) * travelRadius;
+
+      const breath = 1 + Math.sin(angle * 1.5) * 0.03;
+      const globalRot = angle * 0.3;
+
+      const pullStrength = 25;
+      const pullX = Math.cos(angle) * pullStrength;
+      const pullY = Math.sin(angle) * pullStrength;
+
+      baseRings.forEach((r, i) => {
+        const wobbleX = Math.cos(angle * 2 + i * 0.7) * (i + 1) * 1.8;
+        const wobbleY = Math.sin(angle * 2 + i * 0.7) * (i + 1) * 1.8;
+
+        const ox = Math.cos(globalRot) * wobbleX - Math.sin(globalRot) * wobbleY;
+        const oy = Math.sin(globalRot) * wobbleX + Math.cos(globalRot) * wobbleY;
+
+        const tighteningFactor = (i + 1) / baseRings.length;
+        const tx = pullX * tighteningFactor;
+        const ty = pullY * tighteningFactor;
+
+        const radius = r * breath;
+
+        ctx.beginPath();
+        ctx.lineWidth = 1.25;
+        ctx.strokeStyle = "#555555";
+        ctx.arc(cx + ox + tx, cy + oy + ty, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      ctx.restore();
+
+      angle += 0.02;
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>

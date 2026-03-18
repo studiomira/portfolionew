@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mira – Crafting Clarity</title>
+<link rel="icon" type="image/png" href="avatar.png">
+
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+
+<!-- External CSS -->
+<link rel="stylesheet" href="styles.css" />
+<style>
+.cta-button-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 4rem; /* from .cta-button */
+}
+
+.filter-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 3rem; /* to match button shape */
+  backdrop-filter: url(#liquid-glass-button) blur(4px); /* fallback */
+  -webkit-backdrop-filter: url(#liquid-glass-button) blur(4px); /* Safari support */
+}
+
+.cta-button {
+  position: relative; /* ensure button is above filter layer */
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.05); /* subtle background */
+  margin-bottom: 0; /* moved to container */
+}
+</style>
+</head>
+
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="menu-links">
+    <a href="#about" id="about-link">ABOUT</a>
+    <a href="visuals.html">VISUALS</a>
+    <a href="work.html">WORK</a>
+    <a href="contact.html">CONNECT</a>
+  </div>
+</nav>
+  <div class="menu-close" onclick="toggleMenu()">×</div>
+
+<!-- HERO SECTION wrapper (canvas + overlay will live here) -->
+<div class="hero-section"></div>
+
+<svg style="position:absolute; top:-9999px; left:-9999px;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="liquid-glass-button">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feDisplacementMap in="blur" in2="SourceGraphic" scale="18" xChannelSelector="R" yChannelSelector="G" />
+        <feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lighting-color="#white">
+            <fePointLight x="-50" y="-50" z="100" />
+        </feSpecularLighting>
+    </filter>
+  </defs>
+</svg>
+<script>
+  // === Three.js Hero Scene ===
+  const scene = new THREE.Scene();
+  const fogColor = new THREE.Color(0xffffff);
+  scene.fog = new THREE.Fog(fogColor, 10, 60);
+
+  const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setClearColor(0xffffff, 1);
+  renderer.setSize(innerWidth, innerHeight);
+
+  // Put the canvas inside .hero-section and ensure it is positioned for CSS control
+  renderer.domElement.style.position = "absolute";
+  renderer.domElement.style.top = "0";
+  renderer.domElement.style.left = "0";
+  renderer.domElement.style.zIndex = "1";
+  renderer.domElement.style.pointerEvents = "none"; // don't intercept clicks
+
+  // Append canvas into hero-section
+  const heroEl = document.querySelector('.hero-section');
+  heroEl.appendChild(renderer.domElement);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  scene.add(ambient);
+  const pointLight = new THREE.PointLight(0xffffff, 2.4, 300);
+  pointLight.position.set(0, 0, 10);
+  scene.add(pointLight);
+  const highlightLight = new THREE.PointLight(0x99b5ff, 6, 60);
+  scene.add(highlightLight);
+
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const NUM_SPHERES = 250;
+  const BASE_RADIUS = 0.07;
+  const RANGE = 15;
+  const COLORS = [0x002c8b, 0x3355cc, 0x668cff];
+
+  const geo = new THREE.SphereGeometry(BASE_RADIUS, 32, 32);
+  const spheres = [];
+
+  for (let i = 0; i < NUM_SPHERES; i++) {
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const mat = new THREE.MeshPhysicalMaterial({
+      color,
+      metalness: 1.0,
+      roughness: 0.02,
+      transmission: 0.55,
+      reflectivity: 1,
+      clearcoat: 1,
+      clearcoatRoughness: 0.02,
+      transparent: true,
+      opacity: 0.85,
+      envMapIntensity: 3.2
+    });
+    const s = new THREE.Mesh(geo, mat);
+    const xPos = (Math.random() - 0.5) * RANGE * 2;
+    const yPos = (Math.random() - 0.5) * RANGE * 2;
+    const zPos = (Math.random() - 0.5) * RANGE * 2;
+    s.position.set(xPos, yPos, zPos);
+
+    // Store original position for attraction effect
+    s.userData.originalPos = new THREE.Vector3(xPos, yPos, zPos);
+
+    // Mark ~10% of spheres for pulsation and floating
+    if (Math.random() < 0.1) {
+      s.userData.isPulsating = true;
+      s.userData.pulseSpeed = 0.5 + Math.random() * 0.5; // Vary pulse speed
+      s.userData.floatSpeed = 0.3 + Math.random() * 0.4; // Vary float speed
+      s.userData.pulseOffset = Math.random() * Math.PI * 2; // Random phase
+      s.userData.floatOffset = Math.random() * Math.PI * 2; // Random phase
+    }
+
+    group.add(s);
+    spheres.push(s);
+  }
+
+  camera.position.z = 25;
+
+  // Create overlay and append it inside hero-section
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  heroEl.appendChild(overlay);
+
+  const ctaButtonContainer = document.createElement('div');
+  ctaButtonContainer.className = 'cta-button-container';
+
+  const ctaButton = document.createElement('a');
+  ctaButton.href = 'work.html';
+  ctaButton.className = 'cta-button';
+  ctaButton.innerHTML = 'Process & Results <span class="arrow"><svg style="display: inline-block; vertical-align: middle; margin-left: 5px; position: relative; top: -2px;" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="0" y1="12" x2="22" y2="12"></line><polyline points="15 5 22 12 15 19"></polyline></svg></span>';
+
+  const filterLayer = document.createElement('div');
+  filterLayer.className = 'filter-layer';
+
+  ctaButtonContainer.appendChild(filterLayer);
+  ctaButtonContainer.appendChild(ctaButton);
+  overlay.appendChild(ctaButtonContainer);
+
+  const title = document.createElement('h1');
+  title.innerHTML = "CRAFTING<br>CLARITY";
+  overlay.appendChild(title);
+
+  const tagline = document.createElement('p');
+  tagline.className = 'tagline';
+  tagline.textContent = "I DESIGN INTERFACES THAT UNTANGLE COMPLEXITY.";
+  overlay.appendChild(tagline);
+
+  const scrollText = document.createElement('p');
+  scrollText.className = 'scroll-prompt';
+  scrollText.textContent = '';
+  overlay.appendChild(scrollText);
+
+  const arrow = document.createElement('button');
+  arrow.className = 'scroll-arrow';
+  arrow.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  overlay.appendChild(arrow);
+
+  // make arrow scroll to element with id="about"
+  arrow.addEventListener('click', () => {
+    const target = document.querySelector('#about');
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  const feDisplacementMap = document.querySelector('#liquid-glass-button feDisplacementMap');
+  if (feDisplacementMap) {
+    ctaButtonContainer.addEventListener('mouseenter', () => {
+      feDisplacementMap.setAttribute('scale', '25');
+    });
+
+    ctaButtonContainer.addEventListener('mouseleave', () => {
+      feDisplacementMap.setAttribute('scale', '18');
+    });
+  }
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / innerWidth) * 2 - 1;
+    mouseY = -(e.clientY / innerHeight) * 2 + 1;
+  });
+
+  document.addEventListener('touchmove', e => {
+    if (e.touches.length > 0) {
+      mouseX = (e.touches[0].clientX / innerWidth) * 2 - 1;
+      mouseY = -(e.touches[0].clientY / innerHeight) * 2 + 1;
+    }
+  });
+
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length > 0) {
+      mouseX = (e.touches[0].clientX / innerWidth) * 2 - 1;
+      mouseY = -(e.touches[0].clientY / innerHeight) * 2 + 1;
+    }
+  });
+
+  const clock = new THREE.Clock();
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
+
+    camera.position.x += (mouseX * 6 - camera.position.x) * 0.12;
+    camera.position.y += (mouseY * 4 - camera.position.y) * 0.12;
+    camera.lookAt(scene.position);
+
+    pointLight.position.set(mouseX * 60, mouseY * 35, 15 + Math.sin(t) * 5);
+    highlightLight.position.set(mouseX * 40, mouseY * 20, 5);
+
+    const cursorVec = new THREE.Vector2(mouseX, mouseY);
+    spheres.forEach(s => {
+      s.position.copy(s.userData.originalPos);
+
+      if (s.userData.isPulsating) {
+        const pulseScale = 1 + Math.sin(t * s.userData.pulseSpeed + s.userData.pulseOffset) * 0.3;
+        s.scale.set(pulseScale, pulseScale, pulseScale);
+
+        const floatAmount = Math.sin(t * s.userData.floatSpeed + s.userData.floatOffset) * 2;
+        s.position.z = s.userData.originalPos.z + floatAmount;
+      } else {
+        s.scale.set(1, 1, 1);
+      }
+
+      const screenPos = s.position.clone().project(camera);
+      const screenVec = new THREE.Vector2(screenPos.x, screenPos.y);
+      const dist = cursorVec.distanceTo(screenVec);
+
+      const attractionStrength = 0.4;
+      const attractionDistance = 0.6;
+      if (dist < attractionDistance) {
+        const attractionFactor = (1 - dist / attractionDistance) * attractionStrength;
+        const dirX = (cursorVec.x - screenVec.x) * attractionFactor;
+        const dirY = (cursorVec.y - screenVec.y) * attractionFactor;
+
+        const worldOffset = new THREE.Vector3(dirX * 2, -dirY * 2, 0);
+        s.position.add(worldOffset);
+      }
+
+      const intensity = Math.max(0, 1 - dist * 2);
+      s.material.emissive = new THREE.Color(0x3355cc).multiplyScalar(intensity * 0.4);
+    });
+
+    group.rotation.y += 0.001;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('rxXesize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
+
+      window.dispatchEvent(new Event('scroll'));
+    }, 500);
+  });
+
+  function toggleMenu() {
+    document.body.classList.toggle('menu-open');
+    document.querySelector('.menu-links').classList.toggle('open');
+    document.querySelector('.menu-toggle').classList.toggle('open');
+  }
+
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    const heroHeight = window.innerHeight * 0.8;
+    if (window.scrollY > heroHeight) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+
+    // Fade out scroll prompt and arrow
+    const fadeEnd = 300; // The scroll distance over which to fade
+    const opacity = Math.max(0, 1 - (window.scrollY / fadeEnd));
+    scrollText.style.opacity = opacity;
+    arrow.style.opacity = opacity;
+
+    const about = document.querySelector('.about-section');
+    const rect = about.getBoundingClientRect();
+    const aboutVisible = rect.top < window.innerHeight / 2 && rect.bottom > 0;
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    if (aboutVisible) document.getElementById('about-link').classList.add('active');
+  });
+</script>
+
+<!-- About Section -->
+<section class="about-section" id="about">
+  <h2>About Me</h2>
+  <p>
+        For over a decade, I have operated at the intersection of visual systems and information architecture. My approach to Product Design is shaped by a unique dual-lens: a <strong>Master’s in Translation Studies</strong> and an <strong>admission to the MOME Interaction Design Master’s program</strong>, combined with <strong>11 years of professional experience</strong> building scalable visual identities for the European market.
+      </p>
+
+      <p>
+        I specialize in <strong>navigating complexity</strong>. Whether I am auditing Human-in-the-Loop (HITL) workflows for AI systems or managing long-term design systems for premium international clients like <em>Berlinmægleren</em>, my goal is the same: to reduce cognitive load by creating clear, logical structures.
+      </p>
+
+      <p>
+        I don’t just design interfaces; I design the <strong>rules and hierarchies</strong> that make high-density technical data intuitive. I am looking to bring my expertise in Information Architecture and data-driven design to a product team solving complex technical challenges.
+      </p>
+</section>
+
+  <img src="mome-id-19-zaroesemeny-072.jpg" alt="Portfolio project image" class="portfolio-photo">
+
+<!-- Core Capabilities -->
+<section class="core-section" id="core">
+  <h2>Core Capabilities</h2>
+  <div class="core-cards">
+    <div class="core-card">
+      <h3>Scalable Design Systems</h3>
+      <p>I build component-based libraries that ensure visual consistency across complex products. My focus is on creating reusable UI patterns that streamline the hand-off between design and development.</p>
+    </div>
+    <div class="core-card">
+      <h3>Information Architecture</h3>
+      <p>I structure complex data hierarchies and metadata schemas to make technical information intuitive. I leverage semantic logic to reduce cognitive load and reveal the logic within the data.</p>
+    </div>
+    <div class="core-card">
+      <h3>Data-Driven UX Strategy</h3>
+      
+      <p>I translate quantitative insights and HITL workflows into friction-free interfaces. My approach optimizes how users interact with AI-steering, data-labeling, and high-density technical systems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Custom Cursor (disabled on touch devices) -->
+<script>
+  (function() {
+    const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) return;
+
+    const cursor = document.createElement('div');
+    cursor.className = 'custom-cursor';
+    document.body.appendChild(cursor);
+
+    let cursorVisible = false;
+
+    document.addEventListener('mousemove', (e) => {
+      if (!cursorVisible) {
+        cursor.style.opacity = '1';
+        cursorVisible = true;
+      }
+      cursor.style.left = (e.clientX - 8) + 'px';
+      cursor.style.top = (e.clientY - 8) + 'px';
+    });
+  })();
+</script>
+
+</body>
+</html>
+
+
+ 
