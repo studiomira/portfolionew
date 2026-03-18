@@ -1,0 +1,99 @@
+/* CONTACT PAGE STYLES */
+.wrap {
+  max-width: 1000px;
+}
+
+form {
+  width: 100%;
+  display: block;
+}
+
+.hello-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.social {
+  margin: 1.5rem 0;
+}
+
+.social a {
+  color: #3355cc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.social a:hover {
+  color: #1a1a1a;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 2rem 0;
+}
+
+label {
+  display: block;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #3355cc;
+}
+
+button {
+  background: #3355cc;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 0.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 1.5rem;
+}
+
+button:hover {
+  background: #2844aa;
+}
+
+#success-screen {
+  display: none;
+  text-align: center;
+  margin: 160px auto 80px auto;
+  max-width: 540px;
+  padding: 0 40px;
+}
+
+#success-screen h1 {
+  color: #3355cc;
+}
+
+#success-screen a {
+  color: #3355cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+#success-screen a:hover {
+  text-decoration: underline;
+}
